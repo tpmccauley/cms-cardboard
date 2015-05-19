@@ -1,0 +1,50 @@
+<!--
+Test of CMS detector at the LHC using Google Cardboard in Chrome inspired by:
+http://www.sitepoint.com/bringing-vr-to-web-google-cardboard-three-js/
+
+thomas.mccauley@cern.ch
+-->
+
+<!DOCTYPE html>
+<html lang="eng">
+<meta charset="utf-8">
+<head>
+  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+  <style>
+    body {
+      margin: 0px;
+      overflow: hidden;
+    }
+    #cms {
+      bottom: 0;
+      left: 0;
+      position: absolute;
+      right: 0;
+      top: 0;
+    }
+  </style>
+
+  <script src="./js/three.min.js"></script>
+  <script src="./js/StereoEffect.js"></script>
+  <script src="./js/DeviceOrientationControls.js"></script>
+  <script src="./js/OrbitControls.js"></script>
+  <script src="./js/jquery-1.11.1.min.js"></script>
+  <script src="./js/cms-cardboard.js"></script>
+
+  <script src="./geometry/dt.js"></script>
+  <script src="./geometry/csc.js"></script>
+
+  <title>CMS Cardboard</title>
+</head>
+</body>
+  <div id="cms"></div>
+   <script type="text/javascript">
+    $(function() {
+      init();
+      draw();
+      run();
+    });
+  </script>
+<body>
+</html>
