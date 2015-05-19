@@ -3,7 +3,8 @@ var detector = {'Collections':{}};
 
 function init() {
   scene = new THREE.Scene();
-  camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 100);
+  camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.001, 700);
+  //camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 100);
   camera.position.set(0, 0, 0);
   scene.add(camera);
 
