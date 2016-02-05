@@ -3,9 +3,11 @@ var detector = {'Collections':{}};
 
 function init() {
   scene = new THREE.Scene();
+
   camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.001, 700);
-  //camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 100);
-  camera.position.set(0, 0, 0);
+  camera.position.set(1, 0, 0);
+  camera.up = new THREE.Vector3(0,1,0);
+  camera.lookAt(new THREE.Vector3(0,0,0));
   scene.add(camera);
 
   renderer = new THREE.WebGLRenderer();
@@ -23,6 +25,17 @@ function init() {
   );
   controls.enablePan = false;
   controls.enableZoom = false;
+
+  var intensity = 1.0;
+  var length = 15.0;
+
+  var light1 = new THREE.DirectionalLight(0xffffff, intensity);
+  light1.position.set(-length, length, length);
+  scene.add(light1);
+
+  var light2 = new THREE.DirectionalLight(0xffffff, intensity);
+  light2.position.set(length, -length, -length);
+  scene.add(light2);
 }
 
 function run() {
@@ -76,11 +89,11 @@ var SOLID = 1;
 
 var detector_description = {
   "SiStripTECMinus3D_V1": {
-    name: "Tracker Endcap (-)", type: SOLID, method: solidFace,
+    name: "Tracker Endcap (-)", type: WIREFRAME, method: wireframeFace,
     style: {color: "rgb(100%, 100%, 0%)", opacity: 0.5, linewidth: 0.5}
   },
   "SiStripTECPlus3D_V1": {
-    name: "Tracker Endcap (+)", type: SOLID, method: solidFace,
+    name: "Tracker Endcap (+)", type: WIREFRAME, method: wireframeFace,
     style: {color: "rgb(100%, 100%, 0%)", opacity: 0.5, linewidth: 0.5}
   },
   "SiStripTIDMinus3D_V1": {
@@ -110,7 +123,8 @@ var detector_description = {
   "PixelBarrel3D_V1": {
     name: "Pixel Barrel", type: WIREFRAME, method: wireframeFace,
     style: {color: "rgb(100%, 100%, 0%)", opacity: 0.5, linewidth: 0.5}
-  },
+  }
+  /*
   "CSC3D_V1": {
     name: "Cathode Strip Chambers", type: SOLID, method: solidBox,
     style: {color: "rgb(60%, 70%, 10%)", opacity: 0.2, linewidth: 1}
@@ -119,6 +133,7 @@ var detector_description = {
     name: "Drift Tubes", type: SOLID, method: solidBox,
     style: {color: "rgb(80%, 40%, 0%)", opacity: 0.2, linewidth: 1}
   }
+  */
 };
 
 function wireframeFace(data, ci) {
@@ -284,3 +299,23 @@ function draw() {
       }
     }
 }
+
+var loader = new THREE.OBJMTLLoader();
+
+function importOBJMTL(name, obj, mtl) {
+  loader.load(obj, mtl, function(object){
+    object.name = name;
+    object.visible = true;
+
+    object.children.forEach(function(c) {
+      c.material.transparent = true;
+      c.material.opacity = 0.5;
+    });
+
+    scene.add(object);
+  });
+};
+
+importOBJMTL('Beam Pipe', './geometry/beampipe.obj', './geometry/beampipe.mtl');
+importOBJMTL('Beam Pipe', './geometry/muon-endcap-minus.obj', './geometry/muon-endcap-minus.mtl');
+importOBJMTL('Beam Pipe', './geometry/muon-endcap-plus.obj', './geometry/muon-endcap-plus.mtl');

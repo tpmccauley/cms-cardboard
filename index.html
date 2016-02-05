@@ -29,11 +29,15 @@ thomas.mccauley@cern.ch
   <script src="./js/StereoEffect.js"></script>
   <script src="./js/DeviceOrientationControls.js"></script>
   <script src="./js/OrbitControls.js"></script>
-  <script src="./js/jquery-1.11.1.min.js"></script>
+  <script src="./js/MTLLoader.js"></script>
+  <script src="./js/OBJMTLLoader.js"></script>
+
   <script src="./js/cms-cardboard.js"></script>
 
+  <!--
   <script src="./geometry/dt.js"></script>
   <script src="./geometry/csc.js"></script>
+  -->
   <script src="./geometry/pixel.js"></script>
   <script src="./geometry/tec.js"></script>
   <script src="./geometry/tib.js"></script>
@@ -45,11 +49,11 @@ thomas.mccauley@cern.ch
 </body>
   <div id="cms"></div>
    <script type="text/javascript">
-    $(function() {
+    (function() {
       init();
       draw();
       run();
-    });
+    })();
   </script>
 <body>
 </html>
