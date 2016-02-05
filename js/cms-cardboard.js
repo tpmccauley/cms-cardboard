@@ -113,11 +113,11 @@ var detector_description = {
   },
   "CSC3D_V1": {
     name: "Cathode Strip Chambers", type: SOLID, method: solidBox,
-    style: {color: "rgb(60%, 70%, 10%)", opacity: 0.5, linewidth: 1}
+    style: {color: "rgb(60%, 70%, 10%)", opacity: 0.2, linewidth: 1}
   },
   "DTs3D_V1": {
-    name: "Drift Tubes", type: WIREFRAME, method: wireframeBox,
-    style: {color: "rgb(80%, 40%, 0%)", opacity: 0.5, linewidth: 1}
+    name: "Drift Tubes", type: SOLID, method: solidBox,
+    style: {color: "rgb(80%, 40%, 0%)", opacity: 0.2, linewidth: 1}
   }
 };
 
@@ -226,7 +226,7 @@ function solidBox(data, ci) {
 
 function draw() {
   for ( var key in detector_description ) {
-  
+
     var data = detector.Collections[key];
 
     if ( ! data || data.length === 0 ) {
@@ -269,6 +269,7 @@ function draw() {
           color:color,
           transparent: transp,
           opacity:descr.style.opacity});
+        material.side = THREE.DoubleSide;
 
         for ( var i = 0; i < data.length; i++ ) {
           geometry.merge(descr.method(data[i],1));
