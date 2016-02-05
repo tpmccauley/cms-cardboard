@@ -317,5 +317,5 @@ function importOBJMTL(name, obj, mtl) {
 };
 
 importOBJMTL('Beam Pipe', './geometry/beampipe.obj', './geometry/beampipe.mtl');
-importOBJMTL('Beam Pipe', './geometry/muon-endcap-minus.obj', './geometry/muon-endcap-minus.mtl');
-importOBJMTL('Beam Pipe', './geometry/muon-endcap-plus.obj', './geometry/muon-endcap-plus.mtl');
+//importOBJMTL('Beam Pipe', './geometry/muon-endcap-minus.obj', './geometry/muon-endcap-minus.mtl');
+//importOBJMTL('Beam Pipe', './geometry/muon-endcap-plus.obj', './geometry/muon-endcap-plus.mtl');
