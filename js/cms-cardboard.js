@@ -5,7 +5,8 @@ function init() {
   scene = new THREE.Scene();
 
   camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.001, 700);
-  camera.position.set(1, 0, 0);
+
+  camera.position.set(1, 1, 0.5);
   camera.up = new THREE.Vector3(0,1,0);
   camera.lookAt(new THREE.Vector3(0,0,0));
   scene.add(camera);
@@ -18,11 +19,6 @@ function init() {
   effect = new THREE.StereoEffect(renderer);
 
   controls = new THREE.OrbitControls(camera, element);
-  controls.target.set(
-    camera.position.x + 0.15,
-    camera.position.y,
-    camera.position.z
-  );
   controls.enablePan = false;
   controls.enableZoom = false;
 
@@ -88,6 +84,7 @@ var WIREFRAME = 0;
 var SOLID = 1;
 
 var detector_description = {
+
   "SiStripTECMinus3D_V1": {
     name: "Tracker Endcap (-)", type: WIREFRAME, method: wireframeFace,
     style: {color: "rgb(100%, 100%, 0%)", opacity: 0.5, linewidth: 0.5}
@@ -112,6 +109,8 @@ var detector_description = {
     name: "Tracker Inner Barrel", type: WIREFRAME, method: wireframeFace,
     style: {color: "rgb(100%, 100%, 0%)", opacity: 0.5, linewidth: 0.5}
   },
+
+  /*
   "PixelEndcapMinus3D_V1": {
     name: "Pixel Endcap (-)", type: WIREFRAME, method: wireframeFace,
     style: {color: "rgb(100%, 100%, 0%)", opacity: 0.5, linewidth: 0.5}
@@ -124,16 +123,17 @@ var detector_description = {
     name: "Pixel Barrel", type: WIREFRAME, method: wireframeFace,
     style: {color: "rgb(100%, 100%, 0%)", opacity: 0.5, linewidth: 0.5}
   }
-  /*
+  */
+
   "CSC3D_V1": {
     name: "Cathode Strip Chambers", type: SOLID, method: solidBox,
-    style: {color: "rgb(60%, 70%, 10%)", opacity: 0.2, linewidth: 1}
+    style: {color: "rgb(60%, 70%, 10%)", opacity: 0.5, linewidth: 1}
   },
   "DTs3D_V1": {
     name: "Drift Tubes", type: SOLID, method: solidBox,
-    style: {color: "rgb(80%, 40%, 0%)", opacity: 0.2, linewidth: 1}
+    style: {color: "rgb(80%, 40%, 0%)", opacity: 0.5, linewidth: 1}
   }
-  */
+
 };
 
 function wireframeFace(data, ci) {
@@ -280,7 +280,7 @@ function draw() {
         break;
 
       case SOLID:
-        var material = new THREE.MeshBasicMaterial({
+        var material = new THREE.MeshLambertMaterial({
           color:color,
           transparent: transp,
           opacity:descr.style.opacity});
@@ -317,5 +317,5 @@ function importOBJMTL(name, obj, mtl) {
 };
 
 importOBJMTL('Beam Pipe', './geometry/beampipe.obj', './geometry/beampipe.mtl');
-//importOBJMTL('Beam Pipe', './geometry/muon-endcap-minus.obj', './geometry/muon-endcap-minus.mtl');
-//importOBJMTL('Beam Pipe', './geometry/muon-endcap-plus.obj', './geometry/muon-endcap-plus.mtl');
+//importOBJMTL('Muon Endcap (-)', './geometry/muon-endcap-minus.obj', './geometry/muon-endcap-minus.mtl');
+//importOBJMTL('Muon Endcap (+)', './geometry/muon-endcap-plus.obj', './geometry/muon-endcap-plus.mtl');
