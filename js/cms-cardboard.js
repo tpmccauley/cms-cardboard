@@ -1,6 +1,22 @@
 var scene, camera, renderer, controls;
 var detector = {'Collections':{}};
 
+var loader = new THREE.OBJMTLLoader();
+
+function importOBJMTL(name, obj, mtl) {
+  loader.load(obj, mtl, function(object){
+    object.name = name;
+    object.visible = true;
+
+    object.children.forEach(function(c) {
+      c.material.transparent = true;
+      c.material.opacity = 0.5;
+    });
+
+    scene.add(object);
+  });
+}
+
 function init() {
   scene = new THREE.Scene();
 
@@ -240,6 +256,10 @@ function solidBox(data, ci) {
 }
 
 function draw() {
+  importOBJMTL('Beam Pipe', './geometry/beampipe.obj', './geometry/beampipe.mtl');
+  //importOBJMTL('Muon Endcap (-)', './geometry/muon-endcap-minus.obj', './geometry/muon-endcap-minus.mtl');
+  //importOBJMTL('Muon Endcap (+)', './geometry/muon-endcap-plus.obj', './geometry/muon-endcap-plus.mtl');
+  
   for ( var key in detector_description ) {
 
     var data = detector.Collections[key];
@@ -299,23 +319,3 @@ function draw() {
       }
     }
 }
-
-var loader = new THREE.OBJMTLLoader();
-
-function importOBJMTL(name, obj, mtl) {
-  loader.load(obj, mtl, function(object){
-    object.name = name;
-    object.visible = true;
-
-    object.children.forEach(function(c) {
-      c.material.transparent = true;
-      c.material.opacity = 0.5;
-    });
-
-    scene.add(object);
-  });
-};
-
-importOBJMTL('Beam Pipe', './geometry/beampipe.obj', './geometry/beampipe.mtl');
-//importOBJMTL('Muon Endcap (-)', './geometry/muon-endcap-minus.obj', './geometry/muon-endcap-minus.mtl');
-//importOBJMTL('Muon Endcap (+)', './geometry/muon-endcap-plus.obj', './geometry/muon-endcap-plus.mtl');
