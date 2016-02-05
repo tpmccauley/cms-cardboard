@@ -21,8 +21,8 @@ function init() {
     camera.position.y,
     camera.position.z
   );
-  controls.noPan = true;
-  controls.noZoom = true;
+  controls.enablePan = false;
+  controls.enableZoom = false;
 }
 
 function run() {
@@ -71,52 +71,86 @@ function fullscreen() {
 }
 //--
 
-detector_description = {
-  "CSC3D_V1": {name: "Cathode Strip Chambers", style: {color: [0.6, 0.7, 0.1], opacity: 0.5, linewidth: 1}},
-  "DTs3D_V1": {name: "Drift Tubes", style: {color: [0.8, 0.4, 0], opacity: 0.5, linewidth: 1}}
-}
+var WIREFRAME = 0;
+var SOLID = 1;
 
-function draw() {
-  for ( var key in detector_description ) {
-    var data = detector.Collections[key];
-    var descr = detector_description[key];
-
-    var color = new THREE.Color();
-    color.setRGB(descr.style.color[0], descr.style.color[1], descr.style.color[2]);
-
-    var transp = false;
-    if ( descr.style.opacity < 1.0 ) {
-      transp = true;
-    }
-
-    var material = new THREE.MeshBasicMaterial({color:color,
-                                                transparent: transp,
-                                                linewidth: descr.style.linewidth,
-                                                opacity:descr.style.opacity});
-    material.side = THREE.DoubleSide;
-
-    var boxes = new THREE.Geometry();
-
-    for ( var i = 0; i < data.length; i++ ) {
-      //boxes.merge(box(data[i],1));
-      boxes.merge(wireframe(data[i],1));
-    }
-
-    //var meshes = new THREE.Mesh(boxes, material);
-    //meshes.name = name;
-    //meshes.visible = true;
-    //scene.add(meshes);
-
-    var lines = new THREE.Line(boxes, material, THREE.LinePieces);
-    lines.name = name;
-    lines.visible = true;
-    scene.add(lines);
+var detector_description = {
+  "SiStripTECMinus3D_V1": {
+    name: "Tracker Endcap (-)", type: SOLID, method: solidFace,
+    style: {color: "rgb(100%, 100%, 0%)", opacity: 0.5, linewidth: 0.5}
+  },
+  "SiStripTECPlus3D_V1": {
+    name: "Tracker Endcap (+)", type: SOLID, method: solidFace,
+    style: {color: "rgb(100%, 100%, 0%)", opacity: 0.5, linewidth: 0.5}
+  },
+  "SiStripTIDMinus3D_V1": {
+    name: "Tracker Inner Detector (-)", type: WIREFRAME, method: wireframeFace,
+    style: {color: "rgb(100%, 100%, 0%)", opacity: 0.5, linewidth: 0.5}
+  },
+  "SiStripTIDPlus3D_V1": {
+    name: "Tracker Inner Detector (+)", type: WIREFRAME, method: wireframeFace,
+    style: {color: "rgb(100%, 100%, 0%)", opacity: 0.5, linewidth: 0.5}
+  },
+  "SiStripTOB3D_V1": {
+    name: "Tracker Outer Barrel", type: WIREFRAME, method: wireframeFace,
+    style: {color: "rgb(100%, 100%, 0%)", opacity: 0.5, linewidth: 0.5}
+  },
+  "SiStripTIB3D_V1": {
+    name: "Tracker Inner Barrel", type: WIREFRAME, method: wireframeFace,
+    style: {color: "rgb(100%, 100%, 0%)", opacity: 0.5, linewidth: 0.5}
+  },
+  "PixelEndcapMinus3D_V1": {
+    name: "Pixel Endcap (-)", type: WIREFRAME, method: wireframeFace,
+    style: {color: "rgb(100%, 100%, 0%)", opacity: 0.5, linewidth: 0.5}
+  },
+  "PixelEndcapPlus3D_V1": {
+    name: "Pixel Endcap (+)", type: WIREFRAME, method: wireframeFace,
+    style: {color: "rgb(100%, 100%, 0%)", opacity: 0.5, linewidth: 0.5}
+  },
+  "PixelBarrel3D_V1": {
+    name: "Pixel Barrel", type: WIREFRAME, method: wireframeFace,
+    style: {color: "rgb(100%, 100%, 0%)", opacity: 0.5, linewidth: 0.5}
+  },
+  "CSC3D_V1": {
+    name: "Cathode Strip Chambers", type: SOLID, method: solidBox,
+    style: {color: "rgb(60%, 70%, 10%)", opacity: 0.5, linewidth: 1}
+  },
+  "DTs3D_V1": {
+    name: "Drift Tubes", type: WIREFRAME, method: wireframeBox,
+    style: {color: "rgb(80%, 40%, 0%)", opacity: 0.5, linewidth: 1}
   }
+};
 
-  console.log(scene);
-}
+function wireframeFace(data, ci) {
+  var f1 = new THREE.Vector3(data[ci][0],   data[ci][1],   data[ci][2]);
+  var f2 = new THREE.Vector3(data[ci+1][0], data[ci+1][1], data[ci+1][2]);
+  var f3 = new THREE.Vector3(data[ci+2][0], data[ci+2][1], data[ci+2][2]);
+  var f4 = new THREE.Vector3(data[ci+3][0], data[ci+3][1], data[ci+3][2]);
 
-function wireframe(data, ci) {
+  var face = new THREE.Geometry();
+  face.vertices.push(f1,f2);
+  face.vertices.push(f2,f3);
+  face.vertices.push(f3,f4);
+  face.vertices.push(f4,f1);
+
+  return face;
+};
+
+function solidFace(data, ci) {
+  var f1 = new THREE.Vector3(data[ci][0],   data[ci][1],   data[ci][2]);
+  var f2 = new THREE.Vector3(data[ci+1][0], data[ci+1][1], data[ci+1][2]);
+  var f3 = new THREE.Vector3(data[ci+2][0], data[ci+2][1], data[ci+2][2]);
+  var f4 = new THREE.Vector3(data[ci+3][0], data[ci+3][1], data[ci+3][2]);
+
+  var face = new THREE.Geometry();
+  face.vertices = [f1,f2,f3,f4];
+  face.faces.push(new THREE.Face3(0,1,2));
+  face.faces.push(new THREE.Face3(0,2,3));
+
+  return face;
+};
+
+function wireframeBox(data, ci) {
   var f1 = new THREE.Vector3(data[ci][0],   data[ci][1],   data[ci][2]);
   var f2 = new THREE.Vector3(data[ci+1][0], data[ci+1][1], data[ci+1][2]);
   var f3 = new THREE.Vector3(data[ci+2][0], data[ci+2][1], data[ci+2][2]);
@@ -127,9 +161,6 @@ function wireframe(data, ci) {
   var b3 = new THREE.Vector3(data[ci+6][0], data[ci+6][1], data[ci+6][2]);
   var b4 = new THREE.Vector3(data[ci+7][0], data[ci+7][1], data[ci+7][2]);
 
-  // With THREE.LinePieces the Line is made
-  // by connecting pairs of vertices instead
-  // of one continuous line
   var box = new THREE.Geometry();
   box.vertices.push(f1,f2);
   box.vertices.push(f2,f3);
@@ -149,7 +180,7 @@ function wireframe(data, ci) {
   return box;
 }
 
-function box(data, ci) {
+function solidBox(data, ci) {
   var f1 = new THREE.Vector3(data[ci][0],   data[ci][1],   data[ci][2]);
   var f2 = new THREE.Vector3(data[ci+1][0], data[ci+1][1], data[ci+1][2]);
   var f3 = new THREE.Vector3(data[ci+2][0], data[ci+2][1], data[ci+2][2]);
@@ -167,7 +198,6 @@ function box(data, ci) {
   box.faces.push(new THREE.Face3(0,1,2));
   box.faces.push(new THREE.Face3(0,2,3));
 
-  /*
   // back
   box.faces.push(new THREE.Face3(4,5,6));
   box.faces.push(new THREE.Face3(4,6,7));
@@ -187,10 +217,69 @@ function box(data, ci) {
   // right
   box.faces.push(new THREE.Face3(4,6,2));
   box.faces.push(new THREE.Face3(4,0,2));
-  */
 
   box.computeFaceNormals();
   box.computeVertexNormals();
 
   return box;
+}
+
+function draw() {
+  for ( var key in detector_description ) {
+  
+    var data = detector.Collections[key];
+
+    if ( ! data || data.length === 0 ) {
+      console.log(key);
+      continue;
+    }
+
+    var descr = detector_description[key];
+
+    var color = new THREE.Color(descr.style.color);
+
+    var transp = false;
+    if ( descr.style.opacity < 1.0 ) {
+      transp = true;
+    }
+
+    var geometry = new THREE.Geometry();
+
+    switch(descr.type) {
+      case WIREFRAME:
+        var material = new THREE.LineBasicMaterial({
+          color:color,
+          transparent: transp,
+          linewidth:descr.style.linewidth, depthWrite: false,
+          opacity:descr.style.opacity});
+
+        for ( var i = 0; i < data.length; i++ ) {
+          geometry.merge(descr.method(data[i],1));
+        }
+
+        var mesh = new THREE.LineSegments(geometry, material);
+        mesh.name = descr.name;
+        mesh.visible = true;
+        scene.add(mesh);
+
+        break;
+
+      case SOLID:
+        var material = new THREE.MeshBasicMaterial({
+          color:color,
+          transparent: transp,
+          opacity:descr.style.opacity});
+
+        for ( var i = 0; i < data.length; i++ ) {
+          geometry.merge(descr.method(data[i],1));
+        }
+
+        var mesh = new THREE.Mesh(geometry, material);
+        mesh.name = descr.name;
+        mesh.visible = true;
+        scene.add(mesh);
+
+        break;
+      }
+    }
 }
