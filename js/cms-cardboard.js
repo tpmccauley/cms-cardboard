@@ -10,7 +10,7 @@ function importOBJMTL(name, obj, mtl) {
 
     object.children.forEach(function(c) {
       c.material.transparent = true;
-      c.material.opacity = 0.5;
+      c.material.opacity = 0.75;
     });
 
     scene.add(object);
@@ -99,7 +99,7 @@ function fullscreen() {
 var WIREFRAME = 0;
 var SOLID = 1;
 
-var tracker_style = {color: "rgb(100%, 100%, 0%)", emissive: "rgb(30%, 30%, 30%)", specular: "rgb(30%, 30%, 30%)", opacity: 1, linewidth: 1};
+var tracker_style = {color: "rgb(100%, 100%, 0%)", emissive: "rgb(30%, 30%, 30%)", specular: "rgb(30%, 30%, 30%)", opacity: 0.75, linewidth: 1};
 
 var detector_description = {
 
@@ -109,15 +109,18 @@ var detector_description = {
   "SiStripTECPlus3D_V1": {
     name: "Tracker Endcap (+)", type: SOLID, method: solidBox, style: tracker_style
   },
+  /*
   "SiStripTIDMinus3D_V1": {
     name: "Tracker Inner Detector (-)", type: SOLID, method: solidBox, style: tracker_style
   },
   "SiStripTIDPlus3D_V1": {
     name: "Tracker Inner Detector (+)", type: SOLID, method: solidBox, style: tracker_style
   },
+  */
   "SiStripTOB3D_V1": {
     name: "Tracker Outer Barrel", type: SOLID, method: solidBox, style: tracker_style
   },
+  /*
   "SiStripTIB3D_V1": {
     name: "Tracker Inner Barrel", type: SOLID, method: solidBox, style: tracker_style
   },
@@ -130,13 +133,14 @@ var detector_description = {
   "PixelBarrel3D_V1": {
     name: "Pixel Barrel", type: SOLID, method: solidBox, style: tracker_style
   },
+  */
   "CSC3D_V1": {
     name: "Cathode Strip Chambers", type: SOLID, method: solidBox,
-    style: {color: "rgb(60%, 70%, 10%)", emissive: "rgb(30%, 30%, 30%)", specular: "rgb(0%, 0%, 0%)", opacity: 1, linewidth: 1}
+    style: {color: "rgb(60%, 70%, 10%)", emissive: "rgb(30%, 30%, 30%)", specular: "rgb(0%, 0%, 0%)", opacity: 0.75, linewidth: 1}
   },
   "DTs3D_V1": {
     name: "Drift Tubes", type: SOLID, method: solidBox,
-    style: {color: "rgb(80%, 40%, 0%)", emissive: "rgb(30%, 30%, 30%)", specular: "rgb(0%, 0%, 0%)", opacity: 1, linewidth: 1}
+    style: {color: "rgb(80%, 40%, 0%)", emissive: "rgb(30%, 30%, 30%)", specular: "rgb(0%, 0%, 0%)", opacity: 0.75, linewidth: 1}
   }
 
 };
