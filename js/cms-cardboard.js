@@ -99,55 +99,44 @@ function fullscreen() {
 var WIREFRAME = 0;
 var SOLID = 1;
 
+var tracker_style = {color: "rgb(100%, 100%, 0%)", emissive: "rgb(30%, 30%, 30%)", specular: "rgb(30%, 30%, 30%)", opacity: 1, linewidth: 1};
+
 var detector_description = {
 
   "SiStripTECMinus3D_V1": {
-    name: "Tracker Endcap (-)", type: WIREFRAME, method: wireframeFace,
-    style: {color: "rgb(100%, 100%, 0%)", opacity: 0.5, linewidth: 0.5}
+    name: "Tracker Endcap (-)", type: SOLID, method: solidBox, style: tracker_style
   },
   "SiStripTECPlus3D_V1": {
-    name: "Tracker Endcap (+)", type: WIREFRAME, method: wireframeFace,
-    style: {color: "rgb(100%, 100%, 0%)", opacity: 0.5, linewidth: 0.5}
+    name: "Tracker Endcap (+)", type: SOLID, method: solidBox, style: tracker_style
   },
   "SiStripTIDMinus3D_V1": {
-    name: "Tracker Inner Detector (-)", type: WIREFRAME, method: wireframeFace,
-    style: {color: "rgb(100%, 100%, 0%)", opacity: 0.5, linewidth: 0.5}
+    name: "Tracker Inner Detector (-)", type: SOLID, method: solidBox, style: tracker_style
   },
   "SiStripTIDPlus3D_V1": {
-    name: "Tracker Inner Detector (+)", type: WIREFRAME, method: wireframeFace,
-    style: {color: "rgb(100%, 100%, 0%)", opacity: 0.5, linewidth: 0.5}
+    name: "Tracker Inner Detector (+)", type: SOLID, method: solidBox, style: tracker_style
   },
   "SiStripTOB3D_V1": {
-    name: "Tracker Outer Barrel", type: WIREFRAME, method: wireframeFace,
-    style: {color: "rgb(100%, 100%, 0%)", opacity: 0.5, linewidth: 0.5}
+    name: "Tracker Outer Barrel", type: SOLID, method: solidBox, style: tracker_style
   },
   "SiStripTIB3D_V1": {
-    name: "Tracker Inner Barrel", type: WIREFRAME, method: wireframeFace,
-    style: {color: "rgb(100%, 100%, 0%)", opacity: 0.5, linewidth: 0.5}
+    name: "Tracker Inner Barrel", type: SOLID, method: solidBox, style: tracker_style
   },
-
-  /*
   "PixelEndcapMinus3D_V1": {
-    name: "Pixel Endcap (-)", type: WIREFRAME, method: wireframeFace,
-    style: {color: "rgb(100%, 100%, 0%)", opacity: 0.5, linewidth: 0.5}
+    name: "Pixel Endcap (-)", type: SOLID, method: solidBox, style: tracker_style
   },
   "PixelEndcapPlus3D_V1": {
-    name: "Pixel Endcap (+)", type: WIREFRAME, method: wireframeFace,
-    style: {color: "rgb(100%, 100%, 0%)", opacity: 0.5, linewidth: 0.5}
+    name: "Pixel Endcap (+)", type: SOLID, method: solidBox, style: tracker_style
   },
   "PixelBarrel3D_V1": {
-    name: "Pixel Barrel", type: WIREFRAME, method: wireframeFace,
-    style: {color: "rgb(100%, 100%, 0%)", opacity: 0.5, linewidth: 0.5}
-  }
-  */
-
+    name: "Pixel Barrel", type: SOLID, method: solidBox, style: tracker_style
+  },
   "CSC3D_V1": {
     name: "Cathode Strip Chambers", type: SOLID, method: solidBox,
-    style: {color: "rgb(60%, 70%, 10%)", opacity: 0.5, linewidth: 1}
+    style: {color: "rgb(60%, 70%, 10%)", emissive: "rgb(30%, 30%, 30%)", specular: "rgb(0%, 0%, 0%)", opacity: 1, linewidth: 1}
   },
   "DTs3D_V1": {
     name: "Drift Tubes", type: SOLID, method: solidBox,
-    style: {color: "rgb(80%, 40%, 0%)", opacity: 0.5, linewidth: 1}
+    style: {color: "rgb(80%, 40%, 0%)", emissive: "rgb(30%, 30%, 30%)", specular: "rgb(0%, 0%, 0%)", opacity: 1, linewidth: 1}
   }
 
 };
@@ -259,7 +248,7 @@ function draw() {
   importOBJMTL('Beam Pipe', './geometry/beampipe.obj', './geometry/beampipe.mtl');
   //importOBJMTL('Muon Endcap (-)', './geometry/muon-endcap-minus.obj', './geometry/muon-endcap-minus.mtl');
   //importOBJMTL('Muon Endcap (+)', './geometry/muon-endcap-plus.obj', './geometry/muon-endcap-plus.mtl');
-  
+
   for ( var key in detector_description ) {
 
     var data = detector.Collections[key];
@@ -270,7 +259,6 @@ function draw() {
     }
 
     var descr = detector_description[key];
-
     var color = new THREE.Color(descr.style.color);
 
     var transp = false;
@@ -300,8 +288,13 @@ function draw() {
         break;
 
       case SOLID:
-        var material = new THREE.MeshLambertMaterial({
+        var emissive = new THREE.Color(descr.style.emissive);
+        var specular = new THREE.Color(descr.style.specular);
+
+        var material = new THREE.MeshPhongMaterial({
           color:color,
+          emissive:emissive,
+          specular:specular,
           transparent: transp,
           opacity:descr.style.opacity});
         material.side = THREE.DoubleSide;
