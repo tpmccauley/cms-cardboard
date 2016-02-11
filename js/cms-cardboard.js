@@ -22,7 +22,7 @@ function init() {
 
   camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.001, 700);
 
-  camera.position.set(1, 1, 0.5);
+  camera.position.set(10, 0, 20);
   camera.up = new THREE.Vector3(0,1,0);
   camera.lookAt(new THREE.Vector3(0,0,0));
   scene.add(camera);
@@ -99,7 +99,7 @@ function fullscreen() {
 var WIREFRAME = 0;
 var SOLID = 1;
 
-var tracker_style = {color: "rgb(100%, 100%, 0%)", emissive: "rgb(30%, 30%, 30%)", specular: "rgb(30%, 30%, 30%)", opacity: 0.75, linewidth: 1};
+var tracker_style = {color: "rgb(30%, 30%, 30%)", emissive: "rgb(100%, 100%, 0%)", specular: "rgb(100%, 100%, 0%)", opacity: 0.75, linewidth: 1};
 
 var detector_description = {
 
@@ -136,11 +136,11 @@ var detector_description = {
   */
   "CSC3D_V1": {
     name: "Cathode Strip Chambers", type: SOLID, method: solidBox,
-    style: {color: "rgb(60%, 70%, 10%)", emissive: "rgb(30%, 30%, 30%)", specular: "rgb(0%, 0%, 0%)", opacity: 0.75, linewidth: 1}
+    style: {color: "rgb(30%, 30%, 30%)", emissive: "rgb(60%, 70%, 10%)", specular: "rgb(60%, 70%, 10%)", opacity: 0.75, linewidth: 1}
   },
   "DTs3D_V1": {
     name: "Drift Tubes", type: SOLID, method: solidBox,
-    style: {color: "rgb(80%, 40%, 0%)", emissive: "rgb(30%, 30%, 30%)", specular: "rgb(0%, 0%, 0%)", opacity: 0.75, linewidth: 1}
+    style: {color: "rgb(30%, 30%, 30%)", emissive: "rgb(80%, 40%, 0%)", specular: "rgb(80%, 40%, 0%)", opacity: 0.75, linewidth: 1}
   }
 
 };
