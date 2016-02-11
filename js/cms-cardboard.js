@@ -28,6 +28,7 @@ function init() {
   scene.add(camera);
 
   renderer = new THREE.WebGLRenderer();
+  renderer.setPixelRatio(window.devicePixelRatio ? window.devicePixelRatio : 1);
   element = renderer.domElement;
   container = document.getElementById('cms');
   container.appendChild(element);
