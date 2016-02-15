@@ -1,6 +1,5 @@
 var scene, camera, renderer, controls;
 var detector = {'Collections':{}};
-
 var loader = new THREE.OBJMTLLoader();
 
 function importOBJMTL(name, obj, mtl) {
@@ -23,6 +22,7 @@ function init() {
   camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.001, 700);
 
   camera.position.set(10, 0, 20);
+  //camera.position.set(3, 0, 0);
   camera.up = new THREE.Vector3(0,1,0);
   camera.lookAt(new THREE.Vector3(0,0,0));
   scene.add(camera);
@@ -49,6 +49,61 @@ function init() {
   var light2 = new THREE.DirectionalLight(0xffffff, intensity);
   light2.position.set(length, -length, -length);
   scene.add(light2);
+
+  var pgeometry = new THREE.SphereGeometry(0.25,32,32);
+  var pmaterial = new THREE.MeshBasicMaterial({color: 0xffff00});
+
+  var bunch1 = new THREE.Mesh(pgeometry, pmaterial);
+  bunch1.position.x = 0;
+  bunch1.position.y = 0;
+  bunch1.position.z = 200;
+  bunch1.name = 'bunch1';
+  bunch1.visible = true;
+
+  var bunch2 = new THREE.Mesh(pgeometry, pmaterial);
+  bunch2.position.x = 0;
+  bunch2.position.y = 0;
+  bunch2.position.z = -200;
+  bunch2.name = 'bunch2';
+  bunch2.visible = true;
+
+  scene.add(bunch1);
+  scene.add(bunch2);
+
+  var c1 = new TWEEN.Tween(bunch1.position)
+    .to({z:0.0}, 2500)
+    .onComplete(function(){
+      console.log('bang1!');
+    })
+    .easing(TWEEN.Easing.Back.In);
+
+  var c2 = new TWEEN.Tween(bunch2.position)
+    .to({z:0.0}, 2500)
+    .onComplete(function(){
+      console.log('bang2!');
+    })
+    .easing(TWEEN.Easing.Back.In);
+
+  var c3 = new TWEEN.Tween(bunch1.position)
+    .to({z:-200}, 2500)
+    .onComplete(function(){
+      bunch1.position.z = 200;
+    }).easing(TWEEN.Easing.Back.Out);
+
+  var c4 = new TWEEN.Tween(bunch2.position)
+    .to({z:200}, 2500)
+    .onComplete(function(){
+      bunch2.position.z = -200;
+    }).easing(TWEEN.Easing.Back.Out);
+
+  c1.chain(c3);
+  c3.chain(c1);
+
+  c2.chain(c4);
+  c4.chain(c2);
+
+  c1.start();
+  c2.start();
 }
 
 function run() {
@@ -66,6 +121,8 @@ function run() {
 
   controls.update();
   effect.render(scene, camera);
+
+  TWEEN.update();
 }
 
 //--
@@ -104,24 +161,22 @@ var tracker_style = {color: "rgb(30%, 30%, 30%)", emissive: "rgb(100%, 100%, 0%)
 
 var detector_description = {
 
+  /*
   "SiStripTECMinus3D_V1": {
     name: "Tracker Endcap (-)", type: SOLID, method: solidBox, style: tracker_style
   },
   "SiStripTECPlus3D_V1": {
     name: "Tracker Endcap (+)", type: SOLID, method: solidBox, style: tracker_style
   },
-  /*
   "SiStripTIDMinus3D_V1": {
     name: "Tracker Inner Detector (-)", type: SOLID, method: solidBox, style: tracker_style
   },
   "SiStripTIDPlus3D_V1": {
     name: "Tracker Inner Detector (+)", type: SOLID, method: solidBox, style: tracker_style
   },
-  */
   "SiStripTOB3D_V1": {
     name: "Tracker Outer Barrel", type: SOLID, method: solidBox, style: tracker_style
   },
-  /*
   "SiStripTIB3D_V1": {
     name: "Tracker Inner Barrel", type: SOLID, method: solidBox, style: tracker_style
   },
