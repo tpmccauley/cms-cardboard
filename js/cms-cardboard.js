@@ -50,17 +50,17 @@ function init() {
   light2.position.set(length, -length, -length);
   scene.add(light2);
 
-  var pgeometry = new THREE.SphereGeometry(0.25,32,32);
-  var pmaterial = new THREE.MeshBasicMaterial({color: 0xffff00});
+  var bgeometry = new THREE.SphereGeometry(0.1,32,32);
+  var bmaterial = new THREE.MeshBasicMaterial({color: 0xffff00});
 
-  var bunch1 = new THREE.Mesh(pgeometry, pmaterial);
+  var bunch1 = new THREE.Mesh(bgeometry, bmaterial);
   bunch1.position.x = 0;
   bunch1.position.y = 0;
   bunch1.position.z = 200;
   bunch1.name = 'bunch1';
   bunch1.visible = true;
 
-  var bunch2 = new THREE.Mesh(pgeometry, pmaterial);
+  var bunch2 = new THREE.Mesh(bgeometry, bmaterial);
   bunch2.position.x = 0;
   bunch2.position.y = 0;
   bunch2.position.z = -200;
@@ -70,40 +70,66 @@ function init() {
   scene.add(bunch1);
   scene.add(bunch2);
 
-  var c1 = new TWEEN.Tween(bunch1.position)
+  var cgeometry = new THREE.SphereGeometry(0.01, 32, 32);
+  var cmaterial = new THREE.MeshBasicMaterial({
+    transparent: true,
+    opacity: 0.9,
+    color: 0xffff00
+  });
+
+  var collision = new THREE.Mesh(cgeometry, cmaterial);
+  collision.position.set(0,0,0);
+  collision.name = 'Collision';
+  collision.visible = false;
+
+  scene.add(collision);
+  var scale = 1000;
+
+  var t5 = new TWEEN.Tween(collision.scale)
+    .to({x: scale, y: scale, z: scale}, 100)
+    .onStart(function(){
+      collision.visible = true;
+    })
+    .onComplete(function(){
+      collision.scale.set(1/scale, 1/scale, 1/scale);
+      collision.visible = false;
+    });
+
+  var t1 = new TWEEN.Tween(bunch1.position)
     .to({z:0.0}, 2500)
     .onComplete(function(){
-      console.log('bang1!');
+      t5.start();
     })
     .easing(TWEEN.Easing.Back.In);
 
-  var c2 = new TWEEN.Tween(bunch2.position)
+  var t2 = new TWEEN.Tween(bunch2.position)
     .to({z:0.0}, 2500)
     .onComplete(function(){
-      console.log('bang2!');
     })
     .easing(TWEEN.Easing.Back.In);
 
-  var c3 = new TWEEN.Tween(bunch1.position)
+  var t3 = new TWEEN.Tween(bunch1.position)
     .to({z:-200}, 2500)
+    .onStart(function(){
+    })
     .onComplete(function(){
       bunch1.position.z = 200;
     }).easing(TWEEN.Easing.Back.Out);
 
-  var c4 = new TWEEN.Tween(bunch2.position)
+  var t4 = new TWEEN.Tween(bunch2.position)
     .to({z:200}, 2500)
     .onComplete(function(){
       bunch2.position.z = -200;
     }).easing(TWEEN.Easing.Back.Out);
 
-  c1.chain(c3);
-  c3.chain(c1);
+  t1.chain(t3);
+  t3.chain(t1);
 
-  c2.chain(c4);
-  c4.chain(c2);
+  t2.chain(t4);
+  t4.chain(t2);
 
-  c1.start();
-  c2.start();
+  t1.start();
+  t2.start();
 }
 
 function run() {
