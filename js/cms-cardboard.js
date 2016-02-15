@@ -21,8 +21,8 @@ function init() {
 
   camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.001, 700);
 
-  camera.position.set(10, 0, 20);
-  //camera.position.set(3, 0, 0);
+  //camera.position.set(10, 0, 20);
+  camera.position.set(3, 0, 0);
   camera.up = new THREE.Vector3(0,1,0);
   camera.lookAt(new THREE.Vector3(0,0,0));
   scene.add(camera);
@@ -42,11 +42,11 @@ function init() {
   var intensity = 1.0;
   var length = 15.0;
 
-  var light1 = new THREE.DirectionalLight(0xffffff, intensity);
+  var light1 = new THREE.DirectionalLight(0xcccccc, intensity);
   light1.position.set(-length, length, length);
   scene.add(light1);
 
-  var light2 = new THREE.DirectionalLight(0xffffff, intensity);
+  var light2 = new THREE.DirectionalLight(0xcccccc, intensity);
   light2.position.set(length, -length, -length);
   scene.add(light2);
 
@@ -71,34 +71,35 @@ function init() {
   scene.add(bunch2);
 
   var cgeometry = new THREE.SphereGeometry(0.01, 32, 32);
+
   var cmaterial = new THREE.MeshBasicMaterial({
     transparent: true,
-    opacity: 0.9,
+    opacity: 0.25,
     color: 0xffff00
   });
+  cmaterial.depthWrite = false;
 
   var collision = new THREE.Mesh(cgeometry, cmaterial);
   collision.position.set(0,0,0);
   collision.name = 'Collision';
-  collision.visible = false;
+  collision.visible = true;
 
   scene.add(collision);
-  var scale = 1000;
+  var scale = 500;
+  var ctime = 250;
 
-  var t5 = new TWEEN.Tween(collision.scale)
-    .to({x: scale, y: scale, z: scale}, 100)
+  var c1 = new TWEEN.Tween(collision.scale)
+    .to({x: scale, y: scale, z: scale}, ctime)
     .onStart(function(){
-      collision.visible = true;
     })
     .onComplete(function(){
       collision.scale.set(1/scale, 1/scale, 1/scale);
-      collision.visible = false;
     });
 
   var t1 = new TWEEN.Tween(bunch1.position)
     .to({z:0.0}, 2500)
     .onComplete(function(){
-      t5.start();
+      c1.start();
     })
     .easing(TWEEN.Easing.Back.In);
 
@@ -381,6 +382,7 @@ function draw() {
           color:color,
           emissive:emissive,
           specular:specular,
+          shininess: 0,
           transparent: transp,
           opacity:descr.style.opacity});
         material.side = THREE.DoubleSide;
