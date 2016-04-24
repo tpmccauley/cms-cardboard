@@ -1,9 +1,10 @@
 var scene, camera, renderer, controls;
 var detector = {'Collections':{}};
-var loader = new THREE.OBJMTLLoader();
+var objmtlloader = new THREE.OBJMTLLoader();
+var objloader = new THREE.OBJLoader();
 
 function importOBJMTL(name, obj, mtl) {
-  loader.load(obj, mtl, function(object){
+  objmtlloader.load(obj, mtl, function(object){
     object.name = name;
     object.visible = true;
 
@@ -14,6 +15,54 @@ function importOBJMTL(name, obj, mtl) {
 
     scene.add(object);
   });
+}
+
+var event_style = {
+  'EBRecHits_V2': {
+    color:  'rgb(10%, 100%, 10%)', opacity: 0.5
+  },
+  'EERecHits_V2': {
+    color: 'rgb(10%, 100%, 10%)', opacity: 0.5
+  },
+  'HBRecHits_V2': {
+    color: 'rgb(20%, 70%, 100%)', opacity: 0.5
+  },
+  'HERecHits_V2': {
+    color: 'rgb(20%, 70%, 100%)', opacity: 0.5
+  },
+};
+
+function importOBJ(name, obj) {
+  objloader.load(obj, function(object){
+    object.name = name;
+    object.visible = false;
+
+    var style = event_style[name];
+    var material = new THREE.MeshBasicMaterial({color:style.color});
+    material.transparent = true;
+    material.opacity = 0.5;
+    material.side = THREE.DoubleSide;
+
+    object.children.forEach(function(c) {
+      c.material = material;
+    });
+
+    scene.add(object);
+  });
+}
+
+function showEvent() {
+  scene.getObjectByName('EBRecHits_V2').visible = true;
+  scene.getObjectByName('EERecHits_V2').visible = true;
+  scene.getObjectByName('HBRecHits_V2').visible = true;
+  scene.getObjectByName('HERecHits_V2').visible = true;
+}
+
+function hideEvent() {
+  scene.getObjectByName('EBRecHits_V2').visible = false;
+  scene.getObjectByName('EERecHits_V2').visible = false;
+  scene.getObjectByName('HBRecHits_V2').visible = false;
+  scene.getObjectByName('HERecHits_V2').visible = false;
 }
 
 function init() {
@@ -27,13 +76,24 @@ function init() {
   camera.lookAt(new THREE.Vector3(0,0,0));
   scene.add(camera);
 
-  renderer = new THREE.WebGLRenderer();
+  renderer = new THREE.WebGLRenderer({antialias:true, alpha:true});
   renderer.setPixelRatio(window.devicePixelRatio ? window.devicePixelRatio : 1);
+  renderer.setClearColor(0x000000,1);
+
   element = renderer.domElement;
   container = document.getElementById('cms');
   container.appendChild(element);
 
   effect = new THREE.StereoEffect(renderer);
+
+  importOBJMTL('Beam Pipe', './geometry/beampipe.obj', './geometry/beampipe.mtl');
+  //importOBJMTL('Muon Endcap (-)', './geometry/muon-endcap-minus.obj', './geometry/muon-endcap-minus.mtl');
+  //importOBJMTL('Muon Endcap (+)', './geometry/muon-endcap-plus.obj', './geometry/muon-endcap-plus.mtl');
+
+  importOBJ('EBRecHits_V2', './data/EBRecHits_V2.obj');
+  importOBJ('EERecHits_V2', './data/EERecHits_V2.obj');
+  importOBJ('HBRecHits_V2', './data/HBRecHits_V2.obj');
+  importOBJ('HERecHits_V2', './data/HERecHits_V2.obj');
 
   controls = new THREE.OrbitControls(camera, element);
   controls.enablePan = false;
@@ -100,6 +160,7 @@ function init() {
     .to({z:0.0}, 2500)
     .onComplete(function(){
       c1.start();
+      showEvent();
     })
     .easing(TWEEN.Easing.Back.In);
 
@@ -115,6 +176,7 @@ function init() {
     })
     .onComplete(function(){
       bunch1.position.z = 200;
+      hideEvent();
     }).easing(TWEEN.Easing.Back.Out);
 
   var t4 = new TWEEN.Tween(bunch2.position)
@@ -184,7 +246,13 @@ function fullscreen() {
 var WIREFRAME = 0;
 var SOLID = 1;
 
-var tracker_style = {color: "rgb(30%, 30%, 30%)", emissive: "rgb(100%, 100%, 0%)", specular: "rgb(100%, 100%, 0%)", opacity: 0.75, linewidth: 1};
+var tracker_style = {
+  color: "rgb(30%, 30%, 30%)",
+  emissive: "rgb(100%, 100%, 0%)",
+  specular: "rgb(100%, 100%, 0%)",
+  opacity: 0.75,
+  linewidth: 1
+};
 
 var detector_description = {
 
@@ -219,11 +287,11 @@ var detector_description = {
   */
   "CSC3D_V1": {
     name: "Cathode Strip Chambers", type: SOLID, method: solidBox,
-    style: {color: "rgb(30%, 30%, 30%)", emissive: "rgb(60%, 70%, 10%)", specular: "rgb(60%, 70%, 10%)", opacity: 0.75, linewidth: 1}
+    style: {color: "rgb(100%, 100%, 100%)", emissive: "rgb(0%, 0%, 0%)", specular: "rgb(0%, 0%, 0%)", opacity: 0.5, linewidth: 1}
   },
   "DTs3D_V1": {
     name: "Drift Tubes", type: SOLID, method: solidBox,
-    style: {color: "rgb(30%, 30%, 30%)", emissive: "rgb(80%, 40%, 0%)", specular: "rgb(80%, 40%, 0%)", opacity: 0.75, linewidth: 1}
+    style: {color: "rgb(75%, 0%, 0%)", emissive: "rgb(0%, 0%, 0%)", specular: "rgb(0%, 0%, 0%)", opacity: 0.5, linewidth: 1}
   }
 
 };
@@ -332,10 +400,6 @@ function solidBox(data, ci) {
 }
 
 function draw() {
-  importOBJMTL('Beam Pipe', './geometry/beampipe.obj', './geometry/beampipe.mtl');
-  //importOBJMTL('Muon Endcap (-)', './geometry/muon-endcap-minus.obj', './geometry/muon-endcap-minus.mtl');
-  //importOBJMTL('Muon Endcap (+)', './geometry/muon-endcap-plus.obj', './geometry/muon-endcap-plus.mtl');
-
   for ( var key in detector_description ) {
 
     var data = detector.Collections[key];
@@ -381,8 +445,7 @@ function draw() {
         var material = new THREE.MeshPhongMaterial({
           color:color,
           emissive:emissive,
-          specular:specular,
-          shininess: 0,
+          shininess: 30,
           transparent: transp,
           opacity:descr.style.opacity});
         material.side = THREE.DoubleSide;
