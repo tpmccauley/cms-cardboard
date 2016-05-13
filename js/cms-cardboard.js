@@ -1,21 +1,7 @@
 var scene, camera, renderer, controls;
 var detector = {'Collections':{}};
-var objmtlloader = new THREE.OBJMTLLoader();
 var objloader = new THREE.OBJLoader();
-
-function importOBJMTL(name, obj, mtl) {
-  objmtlloader.load(obj, mtl, function(object){
-    object.name = name;
-    object.visible = true;
-
-    object.children.forEach(function(c) {
-      c.material.transparent = true;
-      c.material.opacity = 0.75;
-    });
-
-    scene.add(object);
-  });
-}
+var jsonloader = new THREE.JSONLoader();
 
 var event_style = {
   'EBRecHits_V2': {
@@ -30,18 +16,28 @@ var event_style = {
   'HERecHits_V2': {
     color: 'rgb(20%, 70%, 100%)', opacity: 0.5
   },
+  'Tracks_V3': {
+    color: 'rgb(100%, 100%, 0%)', opacity: 0.9
+  }
 };
 
-function importOBJ(name, obj) {
+function importOBJ(name, obj, type) {
   objloader.load(obj, function(object){
     object.name = name;
     object.visible = false;
 
     var style = event_style[name];
-    var material = new THREE.MeshBasicMaterial({color:style.color});
-    material.transparent = true;
-    material.opacity = 0.5;
-    material.side = THREE.DoubleSide;
+    var material;
+    if ( type === 'box' ) {
+      material = new THREE.MeshBasicMaterial({color:style.color});
+      material.transparent = true;
+      material.opacity = 0.5;
+      material.side = THREE.DoubleSide;
+    }
+
+    if ( type === 'line' ) {
+      material = new THREE.LineBasicMaterial({color:style.color});
+    }
 
     object.children.forEach(function(c) {
       c.material = material;
@@ -56,6 +52,7 @@ function showEvent() {
   scene.getObjectByName('EERecHits_V2').visible = true;
   scene.getObjectByName('HBRecHits_V2').visible = true;
   scene.getObjectByName('HERecHits_V2').visible = true;
+  scene.getObjectByName('Tracks_V3').visible = true;
 }
 
 function hideEvent() {
@@ -63,6 +60,7 @@ function hideEvent() {
   scene.getObjectByName('EERecHits_V2').visible = false;
   scene.getObjectByName('HBRecHits_V2').visible = false;
   scene.getObjectByName('HERecHits_V2').visible = false;
+  scene.getObjectByName('Tracks_V3').visible = false;
 }
 
 function init() {
@@ -70,8 +68,8 @@ function init() {
 
   camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.001, 700);
 
-  camera.position.set(10, 0, 20);
-  //camera.position.set(3, 0, 0);
+  //camera.position.set(10, 0, 20);
+  camera.position.set(3, 0, 1);
   camera.up = new THREE.Vector3(0,1,0);
   camera.lookAt(new THREE.Vector3(0,0,0));
   scene.add(camera);
@@ -86,14 +84,11 @@ function init() {
 
   effect = new THREE.StereoEffect(renderer);
 
-  importOBJMTL('Beam Pipe', './geometry/beampipe.obj', './geometry/beampipe.mtl');
-  //importOBJMTL('Muon Endcap (-)', './geometry/muon-endcap-minus.obj', './geometry/muon-endcap-minus.mtl');
-  //importOBJMTL('Muon Endcap (+)', './geometry/muon-endcap-plus.obj', './geometry/muon-endcap-plus.mtl');
-
-  importOBJ('EBRecHits_V2', './data/EBRecHits_V2.obj');
-  importOBJ('EERecHits_V2', './data/EERecHits_V2.obj');
-  importOBJ('HBRecHits_V2', './data/HBRecHits_V2.obj');
-  importOBJ('HERecHits_V2', './data/HERecHits_V2.obj');
+  importOBJ('EBRecHits_V2', './data/EBRecHits_V2.obj', 'box');
+  importOBJ('EERecHits_V2', './data/EERecHits_V2.obj', 'box');
+  importOBJ('HBRecHits_V2', './data/HBRecHits_V2.obj', 'box');
+  importOBJ('HERecHits_V2', './data/HERecHits_V2.obj', 'box');
+  importOBJ('Tracks_V3', './data/Tracks_V3.obj', 'line');
 
   controls = new THREE.OrbitControls(camera, element);
   controls.enablePan = false;
