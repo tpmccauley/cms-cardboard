@@ -1,6 +1,7 @@
 var scene, camera, renderer, controls;
 var detector = {'Collections':{}};
 var objloader = new THREE.OBJLoader();
+var mtlloader = new THREE.MTLLoader();
 var jsonloader = new THREE.JSONLoader();
 
 var event_style = {
@@ -28,6 +29,7 @@ function importOBJ(name, obj, type) {
 
     var style = event_style[name];
     var material;
+
     if ( type === 'box' ) {
       material = new THREE.MeshBasicMaterial({color:style.color});
       material.transparent = true;
@@ -47,7 +49,43 @@ function importOBJ(name, obj, type) {
   });
 }
 
+
+function importOBJMTL(obj, name) {
+
+    objloader.load(obj, function(object) {
+
+        object.name = name;
+        object.visible = true;
+
+        object.children.forEach(function(c) {
+
+          c.material.transparent = true;
+          c.material.shininess = 30;
+          c.material.side = THREE.DoubleSide;
+
+          if ( name === 'EB' ) {
+            c.material.color = new THREE.Color(0.0,0.0,0.0);
+            c.material.emissive = new THREE.Color(0.5,0.8,1.0);
+            c.material.specular = new THREE.Color(0.3,0.3,0.3);
+            c.material.opacity = 0.5;
+          } else if ( name === 'BeamPipe') {
+              c.material.color = new THREE.Color(0.0,0.0,0.0);
+              c.material.emissive = new THREE.Color(0.3,0.3,0.3);
+              c.material.specular = new THREE.Color(0.3,0.3,0.3);
+              c.material.opacity = 0.75;
+          }
+
+        })
+
+        scene.add(object);
+
+      });
+}
+
 function showEvent() {
+  scene.getObjectByName('BeamPipe').visible = false;
+  scene.getObjectByName('EB').visible = false;
+
   scene.getObjectByName('EBRecHits_V2').visible = true;
   scene.getObjectByName('EERecHits_V2').visible = true;
   scene.getObjectByName('HBRecHits_V2').visible = true;
@@ -56,6 +94,9 @@ function showEvent() {
 }
 
 function hideEvent() {
+  scene.getObjectByName('BeamPipe').visible = true;
+  scene.getObjectByName('EB').visible = true;
+
   scene.getObjectByName('EBRecHits_V2').visible = false;
   scene.getObjectByName('EERecHits_V2').visible = false;
   scene.getObjectByName('HBRecHits_V2').visible = false;
@@ -89,6 +130,9 @@ function init() {
   importOBJ('HBRecHits_V2', './data/HBRecHits_V2.obj', 'box');
   importOBJ('HERecHits_V2', './data/HERecHits_V2.obj', 'box');
   importOBJ('Tracks_V3', './data/Tracks_V3.obj', 'line');
+
+  importOBJMTL('./geometry/beampipe.obj', 'BeamPipe');
+  importOBJMTL('./geometry/EB.obj', 'EB');
 
   controls = new THREE.OrbitControls(camera, element);
   controls.enablePan = false;
@@ -238,55 +282,37 @@ function fullscreen() {
 }
 //--
 
-var WIREFRAME = 0;
-var SOLID = 1;
-
 var tracker_style = {
   color: "rgb(30%, 30%, 30%)",
-  emissive: "rgb(100%, 100%, 0%)",
-  specular: "rgb(100%, 100%, 0%)",
-  opacity: 0.75,
+  emissive: "rgb(75%, 75%, 0%)",
+  specular: "rgb(30%, 30%, 30%)",
+  opacity: 0.5,
   linewidth: 1
 };
 
 var detector_description = {
 
-  /*
+/*
   "SiStripTECMinus3D_V1": {
-    name: "Tracker Endcap (-)", type: SOLID, method: solidBox, style: tracker_style
+    name: "Tracker", methodA: solidFace, methodB: wireframeFace, style: tracker_style
   },
+
   "SiStripTECPlus3D_V1": {
-    name: "Tracker Endcap (+)", type: SOLID, method: solidBox, style: tracker_style
+    name: "Tracker", methodA: solidFace, methodB: wireframeFace, style: tracker_style
   },
-  "SiStripTIDMinus3D_V1": {
-    name: "Tracker Inner Detector (-)", type: SOLID, method: solidBox, style: tracker_style
-  },
-  "SiStripTIDPlus3D_V1": {
-    name: "Tracker Inner Detector (+)", type: SOLID, method: solidBox, style: tracker_style
-  },
+
   "SiStripTOB3D_V1": {
-    name: "Tracker Outer Barrel", type: SOLID, method: solidBox, style: tracker_style
+    name: "Tracker", methodA: solidFace, methodB: wireframeFace, style: tracker_style
   },
-  "SiStripTIB3D_V1": {
-    name: "Tracker Inner Barrel", type: SOLID, method: solidBox, style: tracker_style
-  },
-  "PixelEndcapMinus3D_V1": {
-    name: "Pixel Endcap (-)", type: SOLID, method: solidBox, style: tracker_style
-  },
-  "PixelEndcapPlus3D_V1": {
-    name: "Pixel Endcap (+)", type: SOLID, method: solidBox, style: tracker_style
-  },
-  "PixelBarrel3D_V1": {
-    name: "Pixel Barrel", type: SOLID, method: solidBox, style: tracker_style
-  },
-  */
+*/
   "CSC3D_V1": {
-    name: "Cathode Strip Chambers", type: SOLID, method: solidBox,
-    style: {color: "rgb(100%, 100%, 100%)", emissive: "rgb(0%, 0%, 0%)", specular: "rgb(0%, 0%, 0%)", opacity: 0.5, linewidth: 1}
+    name: "CSC", methodA: solidBox, methodB: wireframeBox,
+    style: {color: "rgb(30%, 30%, 30%)", emissive: "rgb(50%, 50%, 50%)", specular: "rgb(30%, 30%, 30%)", opacity: 0.5, linewidth: 1}
   },
+
   "DTs3D_V1": {
-    name: "Drift Tubes", type: SOLID, method: solidBox,
-    style: {color: "rgb(75%, 0%, 0%)", emissive: "rgb(0%, 0%, 0%)", specular: "rgb(0%, 0%, 0%)", opacity: 0.5, linewidth: 1}
+    name: "DT", methodA: solidBox, methodB: wireframeBox,
+    style: {color: "rgb(30%, 30%, 30%)", emissive: "rgb(75%, 0%, 0%)", specular: "rgb(30%, 30%, 30%)", opacity: 0.5, linewidth: 1}
   }
 
 };
@@ -413,48 +439,41 @@ function draw() {
     }
 
     var geometry = new THREE.Geometry();
+    var lines = new THREE.Geometry();
 
-    switch(descr.type) {
-      case WIREFRAME:
-        var material = new THREE.LineBasicMaterial({
-          color:color,
-          transparent: transp,
-          linewidth:descr.style.linewidth, depthWrite: false,
-          opacity:descr.style.opacity});
+    var emissive = new THREE.Color(descr.style.emissive);
+    var specular = new THREE.Color(descr.style.specular);
 
-        for ( var i = 0; i < data.length; i++ ) {
-          geometry.merge(descr.method(data[i],1));
-        }
+    var material = new THREE.MeshPhongMaterial({
+      color:color,
+      emissive:emissive,
+      shininess: 30,
+      transparent: transp,
+      opacity:descr.style.opacity});
+    material.side = THREE.DoubleSide;
 
-        var mesh = new THREE.LineSegments(geometry, material);
-        mesh.name = descr.name;
-        mesh.visible = true;
-        scene.add(mesh);
-
-        break;
-
-      case SOLID:
-        var emissive = new THREE.Color(descr.style.emissive);
-        var specular = new THREE.Color(descr.style.specular);
-
-        var material = new THREE.MeshPhongMaterial({
-          color:color,
-          emissive:emissive,
-          shininess: 30,
-          transparent: transp,
-          opacity:descr.style.opacity});
-        material.side = THREE.DoubleSide;
-
-        for ( var i = 0; i < data.length; i++ ) {
-          geometry.merge(descr.method(data[i],1));
-        }
-
-        var mesh = new THREE.Mesh(geometry, material);
-        mesh.name = descr.name;
-        mesh.visible = true;
-        scene.add(mesh);
-
-        break;
-      }
+    for ( var i = 0; i < data.length; i++ ) {
+      geometry.merge(descr.methodA(data[i],1));
+      lines.merge(descr.methodB(data[i],1));
     }
+
+    var mesh = new THREE.Mesh(geometry, material);
+    mesh.name = descr.name;
+    mesh.visible = true;
+    scene.add(mesh);
+
+    var line_material = new THREE.LineBasicMaterial({
+      color:color,
+      transparent: transp,
+      linewidth:descr.style.linewidth,
+      depthWrite: false,
+      opacity:descr.style.opacity
+    });
+
+    var line_mesh = new THREE.LineSegments(lines, line_material);
+    line_mesh.name = descr.name;
+    line_mesh.visible = true;
+    scene.add(line_mesh);
+
+  }
 }
